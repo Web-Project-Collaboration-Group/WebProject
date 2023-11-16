@@ -29,13 +29,17 @@
                 {%for a in item%}
                 <td>{{a}}</td>
                 {% endfor %}
-                <td><a href="update?id={{item[0]}}">修改</a></td>
+                <td><a href="{{ url_for('update', id=item[0]) }}">修改</a></td>
                 <!--                <td><a href="del?stuid={{item[0]}}">删除</a></td>-->
-                <td><a href="del2/{{item[0]}}">删除</a></td>
+                <td><a href="{{ url_for('delete2', idi=item[0]) }}">删除</a></td>
             </tr>
             {% endfor %}
         </table>
     </div>
+    <hr>
+    <a href="{{ url_for('index', id=index_page - 1) }}">上一页</a>
+    <a href="{{ url_for('index', id=index_page + 1) }}">下一页</a>
+    共{{total_pages}}页,当前第{{index_page}}页
 </div>
 </body>
 </html>

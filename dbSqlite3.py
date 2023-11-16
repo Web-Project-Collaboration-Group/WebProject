@@ -3,9 +3,7 @@ import sqlite3
 
 def OpenDb():
     database = "./db/student_083_2.db"
-    # database = "./db/student_083.db"
     conn = sqlite3.connect(database)
-    # conn.row_factory = sqlite3.Row
     return conn
 
 
