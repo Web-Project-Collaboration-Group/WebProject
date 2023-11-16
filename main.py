@@ -1,4 +1,12 @@
+import os
+
 from flask import Flask, render_template, request, url_for, redirect, session
+
+#实现验证码功能相关库
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
+import random
+import io
+import os
 
 from dbSqlite3 import *
 
@@ -13,20 +21,66 @@ def CheckLogin():
         return True
 
 
+def generate_captcha():
+    # 生成验证码
+    captcha = ''.join(random.choices('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', k=4))
+
+    # 创建一个Image对象
+    image = Image.new('RGB', (150, 50), color='white')
+
+    # 创建Draw对象
+    draw = ImageDraw.Draw(image)
+    font = ImageFont.truetype("arial.ttf", size=30)  # 使用字体
+
+    # 在图像上绘制验证码
+    for i, char in enumerate(captcha):
+        char_color = tuple(random.randint(0, 255) for _ in range(3))
+        char_position = (10 + i * 30, 10)
+        draw.text(char_position, char, font=font, fill=char_color)
+
+    # 随机划线
+    for _ in range(random.randint(2, 5)):
+        line_color = tuple(random.randint(0, 255) for _ in range(3))
+        line_start = (random.randint(0, 150), random.randint(0, 50))
+        line_end = (random.randint(0, 150), random.randint(0, 50))
+        draw.line([line_start, line_end], fill=line_color, width=2)
+
+    # 高斯模糊
+    image = image.filter(ImageFilter.GaussianBlur(radius=random.uniform(0, 2)))
+
+    # 将图像保存
+    image_stream = io.BytesIO()
+    image.save(image_stream, format='PNG')
+    image_stream.seek(0)
+    image.save(os.path.join("static", "captchas", "captcha_image.png"))
+
+    return captcha, image_stream
+
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == "GET":
-        return render_template('login.html')
-    if 1 == 1:
+        # 生成验证码并将验证码图像保存到session
+        captcha, captcha_image = generate_captcha()
+        session['captcha'] = captcha
 
+        return render_template('login.html', captcha_image=captcha_image, error=None)
+
+    entered_captcha = request.form['captcha']
+    stored_captcha = session.get('captcha')
+
+    if entered_captcha.lower() == stored_captcha.lower():
+        # 验证码匹配
         result, _ = GetSql2(
             "select * from users where username='%s' and pwd='%s'" % (request.form['username'], request.form['pwd']))
         print(result)
         if len(result) > 0:
             session["userid"] = result[0][0]
-            return redirect(url_for('/'))
+            return redirect(url_for('index'))
         else:
-            return render_template('login.html')
+            return render_template('login.html', error='用户名或密码错误', captcha_image=generate_captcha()[1])
+    else:
+        # 验证码不匹配
+        return render_template('login.html', error='验证码错误!', captcha_image=generate_captcha()[1])
 
 
 @app.route('/', methods=['GET'])
@@ -147,6 +201,5 @@ def update():
 
 
 if __name__ == '__main__':
-    # app.run("0.0.0.0",debug=True)
+    app.add_url_rule('/', 'default_route', lambda: redirect(url_for('login')))
     app.run(debug=True)
-    # app.run()
