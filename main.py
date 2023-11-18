@@ -146,7 +146,7 @@ def index(id=None):
     else:
         flash('找不到结果', 'error')
 
-    fields = ["学号", "姓名", "性别", "年龄", "籍贯", "专业号", "专业"]  # 替换成你想要的表头
+    fields = ["学号", "姓名", "性别", "年龄", "籍贯", "专业号", "专业"]  # 替换表头
     return render_template('show1.html', datas=result, fields=fields, index_page=index_page, total_pages=total_pages)
 
 
@@ -187,7 +187,7 @@ def delete2(idi):
     if not CheckLogin():
         return redirect(url_for('login'))
     
-    student_name = GetStudentNameById(idi)  # 你需要实现这个函数，用于获取学生姓名
+    student_name = GetStudentNameById(idi)  # 获取学生姓名
     
     DelDataById("stu_id", idi, "student_info")
     # 在删除成功后，使用 flash 传递消息
