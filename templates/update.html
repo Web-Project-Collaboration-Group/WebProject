@@ -11,65 +11,46 @@
     <div class="col-sm-6 col-sm-offset-4">
         <h3>请输入要更新记录的相关信息</h3>
         <form id="form1" name="form1" method="post" action="/update">
-           <label>学号：{{data[0]}}</label>
+            <label>学号：{{data[0]}}</label>
             <input type="hidden" name="stu_id" value='{{data[0]}}'/>
             <p>
                 <label>姓名： </label>
-                <input type="text" name="stu_name" value='{{data[1]}}'/>
-
+                <input type="text" name="stu_name" value='{{data[1]}}' pattern="[\u4e00-\u9fa5]{1,5}" title="姓名必须为汉字，且不超过五个字" required />
             </p>
             <p>
                 <label>性别：</label>
                 {% if data[2]=="男" %}
-
                 <input name="stu_sex" type="radio" value="男" checked="checked"/>
                 男
-
                 <input type="radio" name="stu_sex" value="女"/>
                 女
-                {%else%}
-
+                {% else %}
                 <input name="stu_sex" type="radio" value="男"/>
                 男
-
                 <input type="radio" name="stu_sex" value="女" checked="checked"/>
                 女
-                {%endif%}
+                {% endif %}
                 <br/>
             </p>
             <p>
                 <label>年龄： </label>
-                <input type="text" name="stu_age" value='{{data[3]}}'/>
-
+                <input type="text" name="stu_age" value='{{data[3]}}' pattern="(?:1[7-9]|20|21|22|23|24|25)" title="年龄必须在17到25之间" required />
             </p>
             <p>
                 <label>籍贯：</label>
                 <input type="text" name="stu_origin" value='{{data[4]}}'/>
-
             </p>
             <p>
                 <label>专业：</label>
-
-<!--                <select name="stu_profession">-->
-<!--                    <option value='{{data[5]}}'>{{data[6]}}</option>-->
-<!--                    {% for pro in datas -%}-->
-<!--                    <option value='{{pro[0]}}'>{{pro[1]}}</option>-->
-<!--                    {%endfor-%}-->
-<!--                </select>-->
                 <select name="stu_profession">
-
-                    {% for pro in datas -%}
+                    {% for pro in datas %}
                     <option value='{{pro[0]}}' {{'selected' if pro[0]==data[5] }}>{{pro[1]}}</option>
-                    {%endfor-%}
+                    {% endfor %}
                 </select>
-
             </p>
             <p>
-
                 <input type="submit" name="button" value="提交"/>
-
                 <input type="reset" name="button2" value="重置"/>
-
                 <br/>
             </p>
         </form>

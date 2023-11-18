@@ -9,12 +9,25 @@
 </head>
 <body>
 <div class="container">
+
+    <!-- 显示添加成功的消息 -->
+    <div id="flash-messages">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <script>
+                    // 使用 JavaScript 弹出消息对话框
+                    alert('{{ messages[0] }}');
+                </script>
+            {% endif %}
+        {% endwith %}
+    </div>
+
     <form>
         姓名：<input type="text" name="name">
         学号：<input type="text" name="stuno">
         <input type="submit" value="查询" class="btn btn-primary btn-sm">
     </form>
-    <div class="row text-center"><a href="/add">add</a></div>
+    <div class="row text-center"><a href="/add">添加学生</a></div>
     <div class="row">
         <table border="1" class="table">
             <tr>
@@ -37,8 +50,10 @@
         </table>
     </div>
     <hr>
+    {% if total_pages > 1 %}
     <a href="{{ url_for('index', id=index_page - 1) }}">上一页</a>
     <a href="{{ url_for('index', id=index_page + 1) }}">下一页</a>
+    {% endif %}
     共{{total_pages}}页,当前第{{index_page}}页
 </div>
 </body>

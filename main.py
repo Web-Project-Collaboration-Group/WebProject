@@ -1,6 +1,8 @@
 import os
 
 from flask import Flask, render_template, request, url_for, redirect, session
+#显示相关信息成功的库
+from flask import flash
 
 #实现验证码功能相关库
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
@@ -117,6 +119,7 @@ def index(id=None):
 
     sql = f"SELECT s.*,  p.stu_profession FROM student_info s INNER JOIN stu_profession p " \
           f"on s.stu_profession_id=p.stu_profession_id LIMIT {start_index}, {items_per_page}"
+    
 
     strWhere = []
     if "name" in request.args:
@@ -128,12 +131,22 @@ def index(id=None):
         stuno = request.args["stuno"]
         if stuno != "":
             strWhere.append(f"stu_id = '%s'" % stuno)
+            
 
     if len(strWhere) > 0:
+        sql = "SELECT s.*,  p.stu_profession FROM student_info s INNER JOIN stu_profession p " \
+          "on s.stu_profession_id=p.stu_profession_id"
         sql = sql + " WHERE " + " AND ".join(strWhere)
+        total_pages=1
         print(sql)
 
     result, fields = GetSql2(sql)
+    if result:
+        flash('学生信息查询成功', 'success')
+    else:
+        flash('找不到结果', 'error')
+
+    fields = ["学号", "姓名", "性别", "年龄", "籍贯", "专业号", "专业"]  # 替换成你想要的表头
     return render_template('show1.html', datas=result, fields=fields, index_page=index_page, total_pages=total_pages)
 
 
@@ -157,15 +170,28 @@ def add():
             stu_profession_id=request.form['stu_profession']
         )
 
-        InsertData(data, "student_info")
-        return redirect(url_for('index', id=index_page))
+        # 调用 InsertData 函数插入数据
+        success, error_message = InsertData(data, "student_info")
+
+    if success:
+        flash('添加学生成功: {}'.format(request.form['stu_name']), 'success')
+    else:
+        flash('添加学生失败: {}'.format(error_message), 'error')
+
+    return redirect(url_for('index', id=index_page))
+
 
 
 @app.route('/del2/<idi>', methods=['GET'])
 def delete2(idi):
     if not CheckLogin():
         return redirect(url_for('login'))
+    
+    student_name = GetStudentNameById(idi)  # 你需要实现这个函数，用于获取学生姓名
+    
     DelDataById("stu_id", idi, "student_info")
+    # 在删除成功后，使用 flash 传递消息
+    flash('删除学生成功: {}'.format(student_name), 'success')
     return redirect(url_for('index', id=index_page))
 
 
@@ -195,7 +221,12 @@ def update():
             stu_origin=request.form['stu_origin'],
             stu_profession_id=request.form['stu_profession']
         )
-        UpdateData(data, "student_info")
+        success, error_message = UpdateData(data, "student_info")
+
+        if success:
+            flash('修改学生成功: {}'.format(request.form['stu_name']), 'success')
+        else:
+            flash('修改学生失败: {}'.format(error_message), 'error')
 
         return redirect(url_for('index'))
 
