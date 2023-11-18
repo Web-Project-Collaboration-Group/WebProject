@@ -142,7 +142,7 @@ def index(id=None):
 
     result, fields = GetSql2(sql)
     if result:
-        flash('学生信息查询成功', 'success')
+        pass
     else:
         flash('找不到结果', 'error')
 
