@@ -234,6 +234,7 @@ def update():
 def update_s():
     if not CheckLogin():
         return redirect(url_for('index'))
+    #根据已选中的导入至年龄更新页面
     id_str = request.args['id']
     id = id_str.split(',')
     datas = []
@@ -246,6 +247,7 @@ def update_s():
 def update_s2(id):
     if not CheckLogin():
         return redirect(url_for('login'))
+    #更改年龄
     if request.method == 'POST':
         id = id.split(',')
         for i in range(0, len(id)):
