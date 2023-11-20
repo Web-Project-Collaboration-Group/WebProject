@@ -6,6 +6,7 @@
     <!-- Bootstrap -->
     <link href="/static/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
     <script src="/static/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="/static/bootstrap/3.2.0/js/updateneed.js"></script>
 </head>
 <body>
 <div class="container">
@@ -31,6 +32,7 @@
     <div class="row">
         <table border="1" class="table">
             <tr>
+                <td>选择</td>
                 {% for a in fields %}
                 <td>{{a}}</td>
                 {% endfor %}
@@ -39,6 +41,7 @@
             </tr>
             {%for item in datas%}
             <tr>
+                <td><input type="checkbox" name="choose_s" id="choose_s" value="{{item[0]}}"></td>
                 {%for a in item%}
                 <td>{{a}}</td>
                 {% endfor %}
@@ -49,6 +52,8 @@
             {% endfor %}
         </table>
     </div>
+    <span style="float:left"><a href="" onclick="del_s()" id="del_chosen">删除选中</a></span>
+    <span style="float:right"><a href="" onclick="update_s()" id="update_chosen">修改选中</a></span>
     <hr>
     {% if total_pages > 1 %}
     <a href="{{ url_for('index', id=index_page - 1) }}">上一页</a>
