@@ -53,6 +53,14 @@ def UpdateData(data, tablename):
         CloseDb(conn)
         return False, "更新失败: {}".format(str(e))
 
+def UpdateAge(id, age):
+    conn = OpenDb()
+    cusor = conn.cursor()
+    sql = "update student_info set stu_age=? where stu_id=?"
+    cusor.execute(sql, (age, id))
+    conn.commit()
+    CloseDb(conn)
+
 
 def InsertData(data, tablename):
     conn = OpenDb()
