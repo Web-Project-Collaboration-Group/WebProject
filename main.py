@@ -230,6 +230,37 @@ def update():
 
         return redirect(url_for('index'))
 
+@app.route('/update_s', methods=['GET','POST'])
+def update_s():
+    if not CheckLogin():
+        return redirect(url_for('index'))
+    id_str = request.args['id']
+    id = id_str.split(',')
+    datas = []
+    for i in range(0, len(id)):
+        datas.append(GetSql2("select stu_id, stu_name from student_info where stu_id='%s'" % id[i])[0])
+    return render_template('update_age.html', datas=datas, id=id)
+
+
+@app.route('/update_s2/<id>', methods=['GET','POST'])
+def update_s2(id):
+    if not CheckLogin():
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        id = id.split(',')
+        for i in range(0, len(id)):
+            UpdateAge(id[i].strip("[]").strip(" ").strip("'"), list(request.form.to_dict().values())[i])
+        return redirect(url_for('index'))
+
+@app.route('/del_s',methods=['GET', 'POST'])
+def del_s():
+    if not CheckLogin():
+        return redirect(url_for('login'))
+    id_str = request.args['id']
+    id = id_str.split(',')
+    for i in range(0, len(id)):
+        DelDataById("stu_id", id[i], "student_info")
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.add_url_rule('/', 'default_route', lambda: redirect(url_for('login')))
